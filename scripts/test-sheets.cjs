@@ -1,0 +1,35 @@
+const fs = require('fs');
+const vm = require('vm');
+const crypto = require('crypto');
+const assert = require('assert/strict');
+const context = vm.createContext({ Utilities: { DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' }, computeDigest: (_a,t) => [...crypto.createHash('sha256').update(t).digest()] }, console });
+const source = fs.readFileSync('sheets/Code.gs','utf8');
+// Apps Script's editor can reject BigInt literals before the V8 runtime executes.
+assert.ok(!/\b\d+n\b/.test(source), 'Use BigInt(string) instead of integer literals with an n suffix.');
+vm.runInContext(source + '\nglobalThis.Decimal = VFDecimal;',context);
+const D = context.Decimal;
+assert.equal(new D('9007199254740993.000000001').add('0.000000009').toString(),'9007199254740993.00000001');
+assert.equal(new D('-0.001').add('0.0009').toString(),'-0.0001');
+assert.equal(new D('1.005').round(2).toString(),'1');
+assert.equal(new D('1.015').round(2).toString(),'1.02');
+assert.equal(new D('-1.015').round(2).toString(),'-1.02');
+function event(id,p,parents='') { const text=JSON.stringify(p), fields=[id,p.id,parents,p.entity,text];return [...fields,crypto.createHash('sha256').update(fields.join('\n')).digest('hex')]; }
+const a={id:'a',entity:'account',name:'Cash',currency:'RUB',account_type:'cash'};
+const debt={id:'d',entity:'account',name:'Counterparty',currency:'RUB',account_type:'debt'};
+const t={id:'t',entity:'transaction',kind:'income',time:'2026-01-01T01:00:00',amount:'10.25',base_amount:'10.25',base_currency:'RUB',postings:[{account:'a',currency:'RUB',amount:'10.25'}]};
+const rows=[event('a1',a),event('d1',debt),event('t1',t)];
+let report=context.VF_REPORT([...rows,rows[2]],[],'RUB','2026-01-01','2026-12-31');
+const value=(section,id='')=>report.find(r=>r[0]===section&&r[1]===id)?.[4];
+assert.equal(value('balance','a'),'10.25');assert.equal(value('income'),'10.25');
+rows.push(event('loan',{id:'l',entity:'transaction',kind:'debt',time:'2026-01-02T00:00:00',postings:[{account:'a',currency:'RUB',amount:'-5'},{account:'d',currency:'RUB',amount:'5'}]}));
+rows.push(event('repay',{id:'r',entity:'transaction',kind:'debt',time:'2026-01-03T00:00:00',postings:[{account:'d',currency:'RUB',amount:'-2'},{account:'a',currency:'RUB',amount:'2'}]}));
+report=context.VF_REPORT(rows,[],'RUB','2026-01-01','2026-12-31');assert.equal(value('balance','d'),'3');assert.equal(value('balance','a'),'7.25');assert.equal(value('income'),'10.25');
+rows.push(event('t2',{...t,deleted:true},'t1'));
+report=context.VF_REPORT(rows,[],'RUB','2026-01-01','2026-12-31');assert.equal(value('income'),'0');
+rows.push(event('t3',{...t,amount:'11'},'t1'));
+report=context.VF_REPORT(rows,[],'RUB','2026-01-01','2026-12-31');assert.ok(report.some(r=>r[0]==='conflict'));
+rows.push(event('t4',t,'t2,t3'));
+report=context.VF_REPORT(rows,[],'RUB','2026-01-01','2026-12-31');assert.equal(value('income'),'10.25');
+const corrupt=rows.map(r=>[...r]);corrupt[0][4]='{}';assert.throws(()=>context.VF_REPORT(corrupt,[],'RUB','',''));
+assert.throws(()=>context.VF_REPORT([event('cycle',{...a},'cycle')],[],'RUB','',''));
+console.log('Sheets exact arithmetic, replay, loan/repayment, deletion, conflict, resolution and tamper checks passed.');

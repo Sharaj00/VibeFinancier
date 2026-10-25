@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <application android:label="VibeFinancier" android:theme="@style/AppTheme" android:icon="@drawable/ic_wallet" android:allowBackup="false" android:usesCleartextTraffic="false" android:supportsRtl="true">
+        <activity android:name=".MainActivity" android:exported="true" android:windowSoftInputMode="adjustResize">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+        <activity android:name=".QuickEntryActivity" android:exported="false" android:theme="@style/QuickTheme" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".WidgetDraftActivity" android:exported="false" android:theme="@style/WidgetOverlayTheme" android:launchMode="singleTop" android:excludeFromRecents="true" android:taskAffinity="app.vibefinancier.widget"/>
+        <receiver android:name=".FinanceWidget" android:exported="false">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/finance_widget"/>
+        </receiver>
+    </application>
+</manifest>

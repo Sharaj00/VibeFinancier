@@ -1,0 +1,12 @@
+tools/
+evidence/
+diagnostics/
+data/
+.gradle/
+**/build/
+local.properties
+*.jks
+*.keystore
+secrets.properties
+releases/
+

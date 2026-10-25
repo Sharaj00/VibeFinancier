@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@android:color/transparent" android:padding="4dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="36dp" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/widget_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center_vertical" android:text="VibeFinancier" android:textSize="11sp" android:maxLines="1" android:contentDescription="Open VibeFinancier"/>
+        <TextView android:id="@+id/widget_save" android:layout_width="40dp" android:layout_height="match_parent" android:gravity="center" android:text="✓" android:textSize="25sp" android:contentDescription="Save operation"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <LinearLayout android:layout_width="64dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center">
+            <ImageView android:id="@+id/widget_from_icon" android:layout_width="48dp" android:layout_height="48dp" android:contentDescription="Choose source account"/>
+            <TextView android:id="@+id/widget_from_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Account" android:textSize="10sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
+        </LinearLayout>
+        <TextView android:id="@+id/widget_amount" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:text="0.00" android:textSize="24sp" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="12sp" android:autoSizeMaxTextSize="24sp" android:maxLines="2" android:contentDescription="Set payment amount"/>
+        <LinearLayout android:layout_width="64dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center">
+            <ImageView android:id="@+id/widget_to_icon" android:layout_width="48dp" android:layout_height="48dp" android:contentDescription="Choose destination"/>
+            <TextView android:id="@+id/widget_to_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Destination" android:textSize="10sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:contentDescription="Choose destination"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:id="@+id/widget_balance" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" android:text="" android:textSize="10sp" android:maxLines="1" android:ellipsize="end"/>
+</LinearLayout>
